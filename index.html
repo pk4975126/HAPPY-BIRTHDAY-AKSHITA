@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For a Special Friend</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <!-- Background Music -->
+    <audio id="bgm" loop>
+        <source src="your-music-file.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- The Physics Canvas -->
+    <canvas id="particle-canvas"></canvas>
+
+    <div id="ui-container">
+        
+        <!-- Phase 1: The Boot Screen -->
+        <div id="lock-screen">
+            <h2 class="tech-title">SYSTEM_READY</h2>
+            <p>Hold to compile the message</p>
+            
+            <button id="unlock-btn">
+                <span>[ INITIATE ]</span>
+            </button>
+            <div class="progress-track">
+                <div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <!-- Phase 2: The Message Box -->
+        <div id="message-container" class="hidden">
+            <div class="glass-box">
+                <div class="tech-badge">
+                    <span class="dot"></span> Coded for you
+                </div>
+                <p class="friendly-msg">
+                    I hope you enjoy this digital experience <br><br>
+                    Happy Birthday! Keep smiling, keep shining, and have an exceptional year ahead! ✨
+                </p>
+                <p class="hint-text">(Try touching or moving your finger over the text above!)</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
