@@ -7,15 +7,31 @@ const messageContainer = document.getElementById('message-container');
 let holdTimer, progress = 0, isUnlocked = false;
 let audioUnlocked = false; 
 
+// --- ROBUST AUDIO UNLOCK FOR MOBILE ---
+function unlockAudio() {
+    if (!audioUnlocked && bgm) {
+        bgm.volume = 0; // Chupke se play karke pause karna
+        bgm.play().then(() => {
+            bgm.pause(); 
+            bgm.currentTime = 0;
+            audioUnlocked = true;
+            window.removeEventListener('touchstart', unlockAudio);
+            window.removeEventListener('mousedown', unlockAudio);
+        }).catch(err => console.log("Waiting for user interaction..."));
+    }
+}
+
+// Mobile par pehle touch par audio unlock karein
+window.addEventListener('touchstart', unlockAudio, { once: true });
+window.addEventListener('mousedown', unlockAudio, { once: true });
+
+
+// --- HOLD TO INITIATE LOGIC ---
 function startHold() {
     if(isUnlocked) return;
-
-    if (!audioUnlocked && bgm) {
-        bgm.play().then(() => {
-            bgm.pause();
-            audioUnlocked = true;
-        }).catch(err => console.log("Audio unlock pending..."));
-    }
+    
+    // Safety fallback
+    unlockAudio(); 
 
     holdTimer = setInterval(() => {
         progress += 2;
@@ -44,9 +60,15 @@ function triggerUnlock() {
     isUnlocked = true;
     clearInterval(holdTimer);
     
+    // Play Music properly
     if(bgm) {
         bgm.volume = 0.6; 
-        bgm.play().catch(e => console.log("Ensure you have a valid MP3 file!"));
+        let playPromise = bgm.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log("Music auto-play was blocked. Check file name/path.");
+            });
+        }
     }
 
     lockScreen.style.opacity = 0;
@@ -59,6 +81,7 @@ function triggerUnlock() {
         messageContainer.classList.remove('hidden');
     }, 3500);
 }
+
 
 // --- PARTICLE PHYSICS ENGINE ---
 const canvas = document.getElementById('particle-canvas');
@@ -124,7 +147,7 @@ class Particle {
     }
 
     draw() {
-        ctx.fillStyle = '#ff69b4'; // Particles are now Pink
+        ctx.fillStyle = '#ff69b4'; // Pink Particles
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
@@ -139,14 +162,14 @@ function initParticleText() {
     offCanvas.width = canvas.width;
     offCanvas.height = canvas.height;
 
-    // Capped max font size slightly smaller so 3 lines take up less vertical room
+    // Font size limited taaki mobile par perfect dikhe
     let fontSize = Math.min(canvas.width / 6, 80); 
     offCtx.fillStyle = 'white';
     offCtx.font = `bold ${fontSize}px Inter, sans-serif`;
     offCtx.textAlign = 'center';
     offCtx.textBaseline = 'middle';
     
-    // Shifted higher up (28% from the top instead of 35% or 50%)
+    // Text ko screen ke upper half (28%) mein shift kiya gaya hai
     let centerY = canvas.height * 0.28; 
     
     offCtx.fillText('HAPPY', canvas.width / 2, centerY - fontSize * 1.1);
